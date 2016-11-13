@@ -2,9 +2,8 @@ push:
 	git push origin
 	git push prod
 
-run:
-	go run chat.go
+web:
+	http-server . -p 8080
 
-rerun:
-	killall chat
-	make run
+server:
+	go run chat.go
