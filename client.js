@@ -1,12 +1,16 @@
 'use strict';
 
 let room = location.search.slice(1)
-let proto, host, socket, message, history, userName, password;
+let proto, host, socket, field, tableau, userName, password;
 var lastSpeaker;
 
 let init = () => {
-    message = document.getElementById('message')
-    history = document.getElementById('history')
+    field = document.getElementById('field')
+    tableau = document.getElementById('tableau')
+    if (room == "") {
+        field.style.display = "none"
+        return
+    } else tableau.innerHTML = null;
     userName = localStorage.getItem('instachat/username')
     if (!userName) {
         userName = prompt("Enter your username:").split(":")
@@ -23,9 +27,9 @@ let init = () => {
 
 let trySend = event => {
     if (event.keyCode != 13) return
-    let encryptedMsg = enc(userName + ":" + message.value, password)
+    let encryptedMsg = enc(userName + ":" + field.value, password)
     socket.send(JSON.stringify(encryptedMsg))
-    message.value = null
+    field.value = null
 }
 
 let displayBubble = cipher => {
@@ -35,9 +39,11 @@ let displayBubble = cipher => {
     let textClassName = user == userName ? 'myBubble' : 'bubble'
     let userClassName = user == userName ? 'myUserName' : 'userName'
     if (lastSpeaker != user) {
-        history.innerHTML += `<div class="${userClassName}">${user}</div>`
+        tableau.innerHTML += `<div class="${userClassName}">${user}</div>`
         lastSpeaker = user;
     }
-    history.innerHTML += `<div class=${textClassName}>${text}</div>`
-    history.scrollTop = history.scrollHeight
+    tableau.innerHTML += `<div class=${textClassName}>${text}</div>`
+    tableau.scrollTop = tableau.scrollHeight
 }
+
+let openRoom = () => location.search = "?" + document.getElementById("room").value;

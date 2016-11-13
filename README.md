@@ -1,7 +1,7 @@
 InstaChat
 =========
 
-Instant anonymous encrypted in-memory only persisted chat.
+Instant anonymous encrypted in-memory-only persisted chat.
 
 ## How to run
 

@@ -5,14 +5,14 @@
     <script src="tea.js"></script>
     <script src="client.js"></script>
     <style>
-        body, #message {
+        body, #field {
             font-size: 1.3em;
             font-family: Arial;
             background-color: #444;
             color: #eee;
             height: 98%;
         }
-        #message {
+        #field {
             border-color: black;
             width: 100%;
             font-size: 1em !important;
@@ -24,13 +24,16 @@
             display: flex;
             flex-direction: column;
         }
-        #history {
+        #tableau {
             flex-grow: 1;
             overflow-y: auto;
             padding-bottom: 0.4em;
         }
         .myBubble, .bubble {
             padding: 0.3em;
+        }
+        h1 {
+            color: #696;
         }
         .myBubble {
             color: #696;
@@ -47,10 +50,30 @@
         .userName:after, .myUserName:after {
             content: ":";
         }
+        #landing {
+            text-align: center;
+        }
+        #room {
+            font-size: 1.1em;
+        }
+        button {
+            background: #696;
+            color: #eee;
+            border: 0em;
+            font-size: 1.2em;
+        }
 </style>
 </head>
 <body onLoad="init()">
-    <div id="history"></div>
-    <input id="message" type="text" placeholder="your message" onkeyup="trySend(event)"/>
+    <div id="tableau">
+        <div id="landing">
+            <h1>InstaChat</h1>
+            Instant anonymous encrypted in-memory-only persisted chat.
+            <br/><br/><br/><br/>
+            <input id="room" type="text" placeholder="room name"/>
+            <button onClick="openRoom()">open</button>
+        </div>
+    </div>
+    <input id="field" type="text" placeholder="your message" onkeyup="trySend(event)"/>
 </body>
 </html>
