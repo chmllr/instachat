@@ -19,28 +19,27 @@ func messageHandler(room string) func(ws *websocket.Conn) {
 		sockets[room] = append(sockets[room], ws)
 		time.Sleep(1 * time.Second)
 		for _, msg := range msgs {
-			log(room, "history message:", string(msg))
 			ws.Write(msg)
 		}
 		for {
 			msg := make([]byte, 512)
-			if bytes, err := ws.Read(msg); err == nil {
-				log(room, bytes, "bytes received")
+			bs, err := ws.Read(msg)
+			if err == nil {
+				log(room, bs, "bytes received")
 			} else {
 				log(room, "closing connection:", err)
 				ws.Close()
 				return
 			}
-			log(room, "new message:", string(msg))
-
-			msgs = append(msgs, msg)
+			effMsg := msg[0:bs]
+			msgs = append(msgs, effMsg)
 			for len(msgs) > maxHistoryLength {
 				msgs = msgs[1:]
 			}
 			log(room, "history length:", len(msgs))
 			history[room] = msgs
 			for _, s := range sockets[room] {
-				s.Write(msg)
+				s.Write(effMsg)
 			}
 		}
 	}
