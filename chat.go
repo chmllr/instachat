@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -11,6 +12,7 @@ import (
 const maxHistoryLength = 1000
 
 var history map[string][][]byte
+var historyLock = &sync.Mutex{}
 var sockets map[string][]*websocket.Conn
 
 func messageHandler(room string) func(ws *websocket.Conn) {
@@ -32,12 +34,14 @@ func messageHandler(room string) func(ws *websocket.Conn) {
 				return
 			}
 			effMsg := msg[0:bs]
+			historyLock.Lock()
 			msgs = append(msgs, effMsg)
 			for len(msgs) > maxHistoryLength {
 				msgs = msgs[1:]
 			}
 			log(room, "history length:", len(msgs))
 			history[room] = msgs
+			historyLock.Unlock()
 			for _, s := range sockets[room] {
 				s.Write(effMsg)
 			}
