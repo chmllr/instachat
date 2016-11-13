@@ -1,13 +1,37 @@
 <html xmlns="https://www.w3.org/1999/xhtml">
 <head>
     <title>Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="client.js"></script>
+    <style>
+        body, #message {
+            font-size: 1.5em;
+            font-family: Roboto, monospace;
+            background-color: #444;
+            color: #eee;
+            height: 100%;
+        }
+        #message {
+            border-color: black;
+            width: 100%;
+            font-size: 1em !important;
+            outline: none;
+            padding: 0.3em;
+            flex-basis: 1.2em;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        #history {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 0.4em;
+        }
+</style>
 </head>
 <body onLoad="init()">
-    Chat
     <div id="history"></div>
-    <input id="message" type="text" placeholder="your message"/>
-    <button onClick="send()">Send</button>
+    <input id="message" type="text" placeholder="your message" onkeyup="trySend(event)"/>
 </body>
 </html>
