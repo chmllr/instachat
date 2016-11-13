@@ -54,11 +54,11 @@ func route(w http.ResponseWriter, r *http.Request) {
 func main() {
 	history = make(map[string][][]byte)
 	sockets = make(map[string][]*websocket.Conn)
+	log("server", "started...")
 	http.HandleFunc("/", route)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}
-	log("server", "started...")
 }
 
 func log(tag string, args ...interface{}) {
