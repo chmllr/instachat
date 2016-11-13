@@ -1,7 +1,7 @@
 'use strict';
 
-let room = 'test'
-let host = 'localhost:12345'
+let room = location.pathname.replace("/")
+let host = 'notehub.org:12345'
 let socket;
 let message, history, userName, password;
 var lastSpeaker;
