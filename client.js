@@ -2,15 +2,8 @@
 
 let room = 'test'
 let host = 'localhost:12345'
-let socket = new WebSocket('ws://' + host + '/' + room, 'protocolOne');
-
-socket.onmessage = event => {
-    let msg = event.data
-    console.log("message received", msg)
-    displayBubble(msg)
-}
-
-let message, history, userName;
+let socket;
+let message, history, userName, password;
 var lastSpeaker;
 
 let init = () => {
@@ -21,6 +14,11 @@ let init = () => {
         userName = prompt("Enter your username:").split(":")
         localStorage.setItem('instachat/username', userName)
     }
+    if (!password) {
+        //password = prompt("Enter the room password:")
+    }
+    socket = new WebSocket('ws://' + host + '/' + room, 'protocolOne');
+    socket.onmessage = event => displayBubble(event.data);
 }
 
 let trySend = event => {
