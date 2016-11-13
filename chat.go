@@ -55,7 +55,7 @@ func main() {
 	history = make(map[string][][]byte)
 	sockets = make(map[string][]*websocket.Conn)
 	http.HandleFunc("/", route)
-	if err := http.ListenAndServe(":12345", nil); err != nil {
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}
 }
