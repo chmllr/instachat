@@ -1,9 +1,7 @@
 'use strict';
 
 let room = location.search.slice(1)
-let host = (location.hostname == 'localhost' ? 'localhost' : 'notehub.org') + ':8080'
-let socket;
-let message, history, userName, password;
+let proto, host, socket, message, history, userName, password;
 var lastSpeaker;
 
 let init = () => {
@@ -18,7 +16,14 @@ let init = () => {
         password = prompt("Enter the room password:")
         while (password.length < 8) password += password;
     }
-    socket = new WebSocket('ws://' + host + '/' + room, 'protocolOne');
+    if (location.hostname == 'localhost') {
+        proto = 'ws'
+        host = 'localhost'
+    } else {
+        proto = 'wss'
+        host = 'notehub.org'
+    }
+    socket = new WebSocket(proto + '://' + host + ':8080/' + room, 'protocolOne');
     socket.onmessage = event => displayBubble(event.data);
 }
 
