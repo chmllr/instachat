@@ -11,6 +11,7 @@ socket.onmessage = event => {
 }
 
 let message, history, userName;
+var lastSpeaker;
 
 let init = () => {
     message = document.getElementById('message')
@@ -31,7 +32,12 @@ let trySend = event => {
 let displayBubble = message => {
     let [user] = message.split(":", 1);
     let text = message.slice(message.indexOf(":")+1)
-    let className = user == userName ? 'myBubble' : 'bubble'
-    history.innerHTML += `<div class=${className}><div class="userName">${user}</div>${text}</div>`
+    let textClassName = user == userName ? 'myBubble' : 'bubble'
+    let userClassName = user == userName ? 'myUserName' : 'userName'
+    if (lastSpeaker != user) {
+        history.innerHTML += `<div class="${userClassName}">${user}</div>`
+        lastSpeaker = user;
+    }
+    history.innerHTML += `<div class=${textClassName}>${text}</div>`
     history.scrollTop = history.scrollHeight
 }
