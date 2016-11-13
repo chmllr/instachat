@@ -58,6 +58,7 @@ func main() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}
+	log("server", "started...")
 }
 
 func log(tag string, args ...interface{}) {
