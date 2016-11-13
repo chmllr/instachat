@@ -16,14 +16,8 @@ let init = () => {
         password = prompt("Enter the room password:")
         while (password.length < 8) password += password;
     }
-    if (location.hostname == 'localhost') {
-        proto = 'ws'
-        host = 'localhost'
-    } else {
-        proto = 'wss'
-        host = 'notehub.org'
-    }
-    socket = new WebSocket(proto + '://' + host + ':8080/' + room, 'protocolOne');
+    host = (location.hostname == 'localhost') ? 'localhost' : 'notehub.org';
+    socket = new WebSocket('ws://' + host + ':8080/' + room, 'protocolOne');
     socket.onmessage = event => displayBubble(event.data);
 }
 
