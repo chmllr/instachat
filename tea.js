@@ -2,9 +2,10 @@
 
 let strToInt32s = input => {
     let int16s = input.split("").map(chr => chr.charCodeAt())
-    var int32s = new Array(Math.ceil(int16s.length / 2))
+    var L = Math.ceil(int16s.length / 2)
+    var int32s = new Uint32Array(L + (L % 2))
     for (var i = 0; i < int32s.length; i+=1) {
-        int32s[i] = (int16s[i*2] << 16) + (int16s[(i*2)+1] || 0);
+        int32s[i] = ((int16s[i*2] || 0) << 16) + (int16s[(i*2)+1] || 0);
     }
     return int32s
 } 
@@ -29,9 +30,6 @@ function encBlocks (v0, v1, k0, k1, k2, k3, k4){
 function enc(input, password) {
     let v = strToInt32s(input);
     let k = strToInt32s(password);
-    if (v.length % 2 != 0) {
-        v.push(0); // padding
-    }
     var cipher = [];
     for (var i = 0; i < v.length; i += 2) {
         cipher.push.apply(cipher, encBlocks(v[i], v[i+1], k[0], k[1], k[2], k[3]))

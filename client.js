@@ -17,8 +17,8 @@ let init = () => {
         localStorage.setItem('instachat/username', userName)
     }
     if (!password) {
-        password = prompt("Enter the room password:")
-        while (password.length < 8) password += password;
+        password = prompt("Enter the room password:") || "0"
+        while (password.length < 8) password += password
     }
     host = (location.hostname == 'localhost') ? 'localhost' : location.hostname;
     socket = new WebSocket('ws://' + host + ':8000/' + room, 'protocolOne');
@@ -28,12 +28,12 @@ let init = () => {
 let trySend = event => {
     if (event.keyCode != 13) return
     let encryptedMsg = enc(userName + ":" + field.value, password)
-    socket.send(JSON.stringify(encryptedMsg))
+    socket.send(int32sToStr(encryptedMsg))
     field.value = null
 }
 
 let displayBubble = cipher => {
-    let message = dec(JSON.parse(cipher), password)
+    let message = dec(strToInt32s(cipher), password)
     let [user] = message.split(":", 1);
     let text = message.slice(message.indexOf(":")+1)
     let textClassName = user == userName ? 'myBubble' : 'bubble'
