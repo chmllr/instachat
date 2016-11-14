@@ -21,19 +21,21 @@ let init = () => {
         while (password.length < 8) password += password
     }
     host = (location.hostname == 'localhost') ? 'localhost' : location.hostname;
-    socket = new WebSocket('ws://' + host + ':8000/' + room, 'protocolOne');
+    socket = new WebSocket('ws://' + host + ':8000/' + room);
+    socket.binaryType = 'arraybuffer';
     socket.onmessage = event => displayBubble(event.data);
 }
 
 let trySend = event => {
     if (event.keyCode != 13) return
     let encryptedMsg = enc(userName + ":" + field.value, password)
-    socket.send(int32sToStr(encryptedMsg))
+    let byteArray = new Uint32Array(encryptedMsg);
+    socket.send(byteArray.buffer)
     field.value = null
 }
 
 let displayBubble = cipher => {
-    let message = dec(strToInt32s(cipher), password)
+    let message = dec(new Uint32Array(cipher), password)
     let [user] = message.split(":", 1);
     let text = message.slice(message.indexOf(":")+1)
     let textClassName = user == userName ? 'myBubble' : 'bubble'

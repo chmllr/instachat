@@ -17,6 +17,7 @@ var sockets map[string][]*websocket.Conn
 
 func messageHandler(room string) func(ws *websocket.Conn) {
 	return func(ws *websocket.Conn) {
+		ws.PayloadType = websocket.BinaryFrame
 		msgs := history[room]
 		sockets[room] = append(sockets[room], ws)
 		time.Sleep(1 * time.Second)

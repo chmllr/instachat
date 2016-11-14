@@ -34,7 +34,7 @@ function enc(input, password) {
     for (var i = 0; i < v.length; i += 2) {
         cipher.push.apply(cipher, encBlocks(v[i], v[i+1], k[0], k[1], k[2], k[3]))
     }
-    return cipher
+    return cipher.map(i => i >>> 0)
 }
 
 function decBlocks(v0, v1, k0, k1, k2, k3, k4) {
