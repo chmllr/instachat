@@ -18,10 +18,9 @@ var sockets map[string][]*websocket.Conn
 func messageHandler(room string) func(ws *websocket.Conn) {
 	return func(ws *websocket.Conn) {
 		ws.PayloadType = websocket.BinaryFrame
-		msgs := history[room]
 		sockets[room] = append(sockets[room], ws)
 		time.Sleep(1 * time.Second)
-		for _, msg := range msgs {
+		for _, msg := range history[room] {
 			ws.Write(msg)
 		}
 		for {
@@ -36,13 +35,14 @@ func messageHandler(room string) func(ws *websocket.Conn) {
 			}
 			effMsg := msg[0:bs]
 			historyLock.Lock()
+			msgs := history[room]
 			msgs = append(msgs, effMsg)
 			for len(msgs) > maxHistoryLength {
 				msgs = msgs[1:]
 			}
-			log(room, "history length:", len(msgs))
 			history[room] = msgs
 			historyLock.Unlock()
+			log(room, "history length:", len(msgs))
 			for _, s := range sockets[room] {
 				s.Write(effMsg)
 			}
