@@ -11,41 +11,55 @@ import (
 
 const maxHistoryLength = 1000
 
-var history map[string][][]byte
-var historyLock = &sync.Mutex{}
-var sockets map[string][]*websocket.Conn
+type room struct {
+	History [][]byte
+	Sockets []*websocket.Conn
+	Mutex   sync.Mutex
+}
 
-func messageHandler(room string) func(ws *websocket.Conn) {
+var rooms map[string]*room
+var mutex sync.Mutex
+
+func messageHandler(roomName string) func(ws *websocket.Conn) {
 	return func(ws *websocket.Conn) {
 		ws.PayloadType = websocket.BinaryFrame
-		sockets[room] = append(sockets[room], ws)
+		var r *room
+		mutex.Lock()
+		if r = rooms[roomName]; r == nil {
+			r = &room{}
+			rooms[roomName] = r
+		}
+		mutex.Unlock()
+		r.Mutex.Lock()
+		r.Sockets = append(r.Sockets, ws)
+		r.Mutex.Unlock()
 		time.Sleep(1 * time.Second)
-		for _, msg := range history[room] {
+		for _, msg := range r.History {
 			ws.Write(msg)
 		}
 		for {
 			msg := make([]byte, 512)
 			bs, err := ws.Read(msg)
 			if err == nil {
-				log(room, bs, "bytes received")
+				log(roomName, bs, "bytes received")
 			} else {
-				log(room, "closing connection:", err)
+				log(roomName, "closing connection:", err)
 				ws.Close()
 				return
 			}
 			effMsg := msg[0:bs]
-			historyLock.Lock()
-			msgs := history[room]
+			r.Mutex.Lock()
+			msgs := r.History
 			msgs = append(msgs, effMsg)
 			for len(msgs) > maxHistoryLength {
 				msgs = msgs[1:]
 			}
-			history[room] = msgs
-			historyLock.Unlock()
-			log(room, "history length:", len(msgs))
-			for _, s := range sockets[room] {
+			r.History = msgs
+			log(roomName, "history length:", len(msgs))
+			for _, s := range r.Sockets {
 				s.Write(effMsg)
 			}
+			r.Mutex.Unlock()
 		}
 	}
 }
@@ -57,8 +71,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	history = make(map[string][][]byte)
-	sockets = make(map[string][]*websocket.Conn)
+	rooms = make(map[string]*room)
 	log("server", "started...")
 	http.HandleFunc("/", route)
 	if err := http.ListenAndServe(":8000", nil); err != nil {
